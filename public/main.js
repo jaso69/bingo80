@@ -1,4 +1,4 @@
-var socket = io.connect('localhost:8080', {'forceNew': true});
+var socket = io.connect('http://54db6f60-d334-4cc2-acb2-d8e17a16faa7.clouding.host:8080', {'forceNew': true});
 
 var user = null;
 var synth = window.speechSynthesis;
