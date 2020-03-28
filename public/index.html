@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Bingo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="card" id="nuevo_usuario">
+        <div class="card-header">
+            <img src="./img/bingo.png" class="card-img-top" height="300" alt="...">
+           <h1> Bienvenid@ al bingo </h1>
+            <div class="alert alert-danger" role="alert" style="display: none" id="esperar">
+                <h1> Partida iniciada, espere a que termine..... </h1>
+            </div>
+        </div>
+        <div class="card-body">
+            <form onsubmit="return addUser(this)">
+                <h5 class="card-title">Introduce tu nombre</h5>
+                <div class="form-group">
+                    <label>Tu nombre</label>
+                    <input type="text" class="form-control" id="nombre">
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="bingo" style="display: none">
+        <nav class="navbar navbar-light bg-light">
+            <p class="navbar-brand" id="usuario"></p>
+            <p class="navbar-brand" id="linea_winner"></p>
+            <p class="navbar-brand" id="bingo_winner"></p>
+            <button class="btn btn-sm btn-outline-success"
+                    id="btn_iniciar"
+                    onclick="return iniciar(this)">
+                Iniciar
+            </button>
+            <button class="btn btn-sm btn-outline-success"
+                    id="btn_pausa"
+                    onclick="return pausa(this)"
+                    style="display: none">
+                Pausa
+            </button>
+            <button class="btn btn-sm btn-outline-success"
+                    id="btn_seguir"
+                    onclick="return seguir(this)"
+                    style="display: none">
+                Seguir
+            </button>
+            <button class="btn btn-sm btn-outline-info"
+                    id="btn_linea"
+                    style="display: none"
+                    onclick="return linea(this)">
+                Linea
+            </button>
+            <button class="btn btn-sm btn-outline-success"
+                    id="btn_bingo"
+                    style="display: none"
+                    onclick="return bingo(this)">
+                Bingo
+            </button>
+            <button class="btn btn-sm btn-outline-danger"
+                    id="btn_fin"
+                    style="display: none"
+                    onclick="return fin(this)">
+                Fin
+            </button>
+        </nav>
+        <div class="d-flex justify-content-center" id="label_bola">
+                <img src=""  id="numero" />
+        </div>
+        <table class="table">
+            <tbody>
+            <tr>
+                <td id="b1">
+                    <img src=""  id="bola1" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola2" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola3" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola4" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola5" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola6" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola7" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola8" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola9" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola10" width="60" height="60" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src=""  id="bola11" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola12" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola13" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola14" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola15" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola16" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola17" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola18" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola19" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola20" width="60" height="60" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src=""  id="bola21" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola22" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola23" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola24" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola25" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola26" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola27" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola28" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola29" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola30" width="60" height="60" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src=""  id="bola31" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola32" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola33" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola34" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola35" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola36" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola37" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola38" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola39" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola40" width="60" height="60" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src=""  id="bola41" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola42" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola43" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola44" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola45" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola46" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola47" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola48" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola49" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola50" width="60" height="60" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src=""  id="bola51" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola52" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola53" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola54" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola55" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola56" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola57" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola58" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola59" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola60" width="60" height="60" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src=""  id="bola61" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola62" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola63" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola64" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola65" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola66" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola67" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola68" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola69" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola70" width="60" height="60" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src=""  id="bola71" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola72" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola73" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola74" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola75" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola76" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola77" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola78" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola79" width="60" height="60" />
+                </td>
+                <td>
+                    <img src=""  id="bola80" width="60" height="60" />
+                </td>
+            </tr>
+        </table>
+        <div class="alert alert-primary" role="alert">
+            <h4>Jugadores conectados</h4>
+            <div id="usuarios" class="alert alert-info" role="alert"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
