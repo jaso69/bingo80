@@ -51,8 +51,7 @@ io.on('connect', function (socket) {
             io.sockets.emit('partida-iniciada', dato);
         }
     });
-    socket.on('fin', function (data) {
-        jugador = data;
+    socket.on('fin', function () {
         partida = false;
         tiradas = 0;
         users = [];
@@ -87,7 +86,7 @@ function tirada(){
             });
         }
     } else {
-        io.sockets.emit('terminar', jugador);
+        io.sockets.emit('terminar');
     }
 }
 
@@ -95,7 +94,7 @@ function otra_bola() {
     if(partida) {
         bola();
     } else {
-        io.sockets.emit('terminar', jugador);
+        io.sockets.emit('terminar');
     }
 }
 
@@ -103,9 +102,8 @@ function bola(){
     let numero = Math.round(Math.random() * (80 - 1)) + 1;
     if (tiradas > 79){
         partida = false;
-        io.sockets.emit('terminar', jugador);
-    }
-    if(!bombo[numero]) {
+        io.sockets.emit('terminar');
+    } else if(!bombo[numero]) {
         bombo[numero] = true;
         let dato = {numero: numero};
         io.sockets.emit('bola', dato);

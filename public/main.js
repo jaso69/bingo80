@@ -1,4 +1,4 @@
-var socket = io.connect('http://54db6f60-d334-4cc2-acb2-d8e17a16faa7.clouding.host:8080', {'forceNew': true});
+var socket = io.connect('http://ec2-18-221-32-176.us-east-2.compute.amazonaws.com:8080', {'forceNew': true});
 
 var user = null;
 var synth = window.speechSynthesis;
@@ -9,12 +9,12 @@ var reg = false;
 
 socket.on('usuarios', function (data) {
     let i;
-    for(i=0; i < data.length; i++){
-        if(data[i].nombre === user.nombre){
-            jugador = true;
-            indice = i;
+        for (i = 0; i < data.length; i++) {
+            if (data[i].nombre === user.nombre) {
+                jugador = true;
+                indice = i;
+            }
         }
-    }
     if(jugador) {
         if (!data[indice].partida) {
             document.getElementById('nuevo_usuario').style.display = 'none';
@@ -75,7 +75,7 @@ socket.on('bola',function (data) {
     }
 });
 
-socket.on('terminar', function (data) {
+socket.on('terminar', function () {
     playSound = new SpeechSynthesisUtterance("partida terminada ");
     synth.speak(playSound);
     socket.emit('nuevo-usuario', user);
@@ -213,7 +213,7 @@ function bingo() {
 
 function fin() {
 
-    socket.emit('fin', user);
+    socket.emit('fin');
     return null;
 }
 
