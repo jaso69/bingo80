@@ -16,7 +16,7 @@ var tiradas = 0;
 
 
 var sleep = () =>{
-    return new Promise(resolve => setTimeout(resolve, 1000));
+    return new Promise(resolve => setTimeout(resolve, 4000));
 };
 
 app.use(express.static('public'));

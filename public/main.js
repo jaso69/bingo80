@@ -93,7 +93,7 @@ socket.on('bola',function (data) {
         let bola = "bola" + data.numero;
             document.getElementById(bola).style.display= 'inline';
             document.getElementById(bola).src = img;
-        render_bola(img); /*
+        render_bola(img);
         playSound = new SpeechSynthesisUtterance(data.numero);
         synth.speak(playSound);
         let decena = parseInt(data.numero / 10, 10);
@@ -103,7 +103,7 @@ socket.on('bola',function (data) {
             let unidad = data.numero % 10;
             playSound = new SpeechSynthesisUtterance(unidad);
             synth.speak(playSound);
-        } */
+        }
         jugada = comprobar(data);
         if (jugada === "linea" && !linea){
             socket.emit('linea', user);
