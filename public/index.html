@@ -17,7 +17,7 @@
                 <h1> Partida iniciada, espere a que termine..... </h1>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body" id="formulario">
             <form onsubmit="return addUser(this)">
                 <h5 class="card-title">Introduce tu nombre</h5>
                 <div class="form-group">
@@ -39,30 +39,6 @@
                     onclick="return iniciar(this)">
                 Iniciar
             </button>
-            <button class="btn btn-sm btn-outline-success"
-                    id="btn_pausa"
-                    onclick="return pausa(this)"
-                    style="display: none">
-                Pausa
-            </button>
-            <button class="btn btn-sm btn-outline-success"
-                    id="btn_seguir"
-                    onclick="return seguir(this)"
-                    style="display: none">
-                Seguir
-            </button>
-            <button class="btn btn-sm btn-outline-info"
-                    id="btn_linea"
-                    style="display: none"
-                    onclick="return linea(this)">
-                Linea
-            </button>
-            <button class="btn btn-sm btn-outline-success"
-                    id="btn_bingo"
-                    style="display: none"
-                    onclick="return bingo(this)">
-                Bingo
-            </button>
             <button class="btn btn-sm btn-outline-danger"
                     id="btn_fin"
                     style="display: none"
@@ -70,10 +46,101 @@
                 Fin
             </button>
         </nav>
-        <div class="d-flex justify-content-center" id="label_bola">
-                <img src=""  id="numero" />
+            <div class="card">
+                <div class="d-flex justify-content-center" id="label_bola">
+                    <img src=""  id="numero" />
+                </div>
+            </div>
+        <div class="card shadow-lg my-2">
+            <h5 class="card-header text-center">Tu cartón</h5>
+            <table class="table">
+            <tbody>
+            <tr>
+                <td>
+                    <img id="c10" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c11"  src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c12" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c13" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c14" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c15" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c16" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c17" src="" width="60" height="60" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img id="c20" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c21"  src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c22" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c23" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c24" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c25" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c26" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c27" src="" width="60" height="60" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img id="c30" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c31"  src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c32" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c33" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c34" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c35" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c36" src="" width="60" height="60" />
+                </td>
+                <td>
+                    <img id="c37" src="" width="60" height="60" />
+                </td>
+            </tr>
+            </tbody>
+        </table>
         </div>
-        <table class="table">
+        <div class="alert alert-primary" role="alert">
+            <h4>Jugadores conectados</h4>
+            <div id="usuarios" class="alert alert-info" role="alert"></div>
+        </div>
+        <table class="table" id="bolas_out">
             <tbody>
             <tr>
                 <td id="b1">
@@ -332,11 +399,8 @@
                 </td>
             </tr>
         </table>
-        <div class="alert alert-primary" role="alert">
-            <h4>Jugadores conectados</h4>
-            <div id="usuarios" class="alert alert-info" role="alert"></div>
-        </div>
     </div>
 </div>
+<button onclick="return reseteo(this)">-.-</button>
 </body>
 </html>

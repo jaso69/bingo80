@@ -1,67 +1,99 @@
 var socket = io.connect('http://ec2-18-221-32-176.us-east-2.compute.amazonaws.com:8080', {'forceNew': true});
 
-var user = null;
+var user = [];
 var synth = window.speechSynthesis;
 var playSound = null;
 var jugador = false;
-var indice = null;
-var reg = false;
+var carton = [];
+var estado = false;
+var linea = false;
+var final = false;
 
-socket.on('usuarios', function (data) {
-    let i;
-        for (i = 0; i < data.length; i++) {
-            if (data[i].nombre === user.nombre) {
-                jugador = true;
-                indice = i;
+function reseteo(){
+    user = [];
+    jugador = false;
+    carton = [];
+    estado = false;
+    linea = false;
+    final = false;
+    socket.emit("reset");
+}
+
+socket.on('resetear', function () {
+    document.getElementById('nuevo_usuario').style.display = 'inline';
+    document.getElementById('bingo').style.display = 'none';
+    document.getElementById('bolas_out').style.display = 'none';
+});
+
+socket.on('usuarioConectado', function (data) {
+        final = false;
+        if (!data[1].partida && user.nombre === data[2].nombre) {
+            estado = true;
+            jugador = true;
+            carton = cartones();
+            for (let c = 0; c < 3; c++) {
+                for (let l = 0; l < 8; l++) {
+                    let idi = "c" + (c + 1) + l;
+                    let bola = "img/bolas/bola" + carton[c][l] + ".png";
+                    if (carton[c][l] === null) {
+                        document.getElementById(idi).src = "img/bolas/bola0.png";
+                    } else {
+                        document.getElementById(idi).src = bola;
+                    }
+                }
             }
-        }
-    if(jugador) {
-        if (!data[indice].partida) {
             document.getElementById('nuevo_usuario').style.display = 'none';
             document.getElementById('bingo').style.display = 'inline';
-            if(!reg) {
-                playSound = new SpeechSynthesisUtterance("bienvenido" + data[indice].nombre);
-                synth.speak(playSound);
-                reg = true;
-            }
+            document.getElementById('bolas_out').style.display = 'none';
+            render_usuarios(data[0]);
             render();
-            render_usuarios(data);
-        } else {
-            document.getElementById('esperar').style.display = 'inline';
         }
-    }
+        if (data[1].partida) {
+            document.getElementById('esperar').style.display = 'inline';
+            document.getElementById('formulario').style.display = 'none';
+        }
+
+        if (estado && user.nombre !== data[2].nombre) {
+            render_usuarios(data[0]);
+            playSound = new SpeechSynthesisUtterance("Se a conectado" + data[2].nombre);
+            synth.speak(playSound);
+        }
+
 });
 
 socket.on('partida-iniciada', function (data) {
 
     if(jugador) {
+        playSound = new SpeechSynthesisUtterance("partida iniciada por " + data.nombre);
+        synth.speak(playSound);
         playSound = new SpeechSynthesisUtterance("Empezamos");
         synth.speak(playSound);
         document.getElementById('btn_iniciar').style.display = 'none';
         document.getElementById('label_bola').style.display = 'none';
-        document.getElementById('btn_pausa').style.display = 'inline';
-        document.getElementById('btn_linea').style.display = 'inline';
         document.getElementById('btn_fin').style.display = 'inline';
         document.getElementById('linea_winner').style.display = 'none';
         document.getElementById('bingo_winner').style.display = 'none';
-        render_usuarios(data);
+        document.getElementById('bolas_out').style.display = 'inline';
+
         for (let i = 1; i < 81; i++) {
             let bola = "bola" + i;
             document.getElementById(bola).style.display = 'none';
         }
     } else {
-        return null;
+        document.getElementById('esperar').style.display = 'inline';
+        document.getElementById('formulario').style.display = 'none';
     }
 });
 
 socket.on('bola',function (data) {
-    if(jugador) {
+    let jugada;
+    if(jugador && !final) {
         document.getElementById('label_bola').style.display = 'inline';
         let img = "./img/bolas/" + "bola" + data.numero + ".png";
         let bola = "bola" + data.numero;
             document.getElementById(bola).style.display= 'inline';
             document.getElementById(bola).src = img;
-        render_bola(img);
+        render_bola(img); /*
         playSound = new SpeechSynthesisUtterance(data.numero);
         synth.speak(playSound);
         let decena = parseInt(data.numero / 10, 10);
@@ -71,81 +103,114 @@ socket.on('bola',function (data) {
             let unidad = data.numero % 10;
             playSound = new SpeechSynthesisUtterance(unidad);
             synth.speak(playSound);
+        } */
+        jugada = comprobar(data);
+        if (jugada === "linea" && !linea){
+            socket.emit('linea', user);
+        }
+        if (jugada === "bingo"){
+            socket.emit('bingo', user);
         }
     }
 });
 
 socket.on('terminar', function () {
-    playSound = new SpeechSynthesisUtterance("partida terminada ");
-    synth.speak(playSound);
-    socket.emit('nuevo-usuario', user);
-    document.getElementById('nuevo_usuario').style.display = 'none';
-    document.getElementById('bingo').style.display = 'inline';
-    document.getElementById('esperar').style.display = 'none';
-    document.getElementById('btn_iniciar').style.display = 'inline';
-    document.getElementById('label_bola').style.display = 'none';
-    document.getElementById('btn_pausa').style.display = 'none';
-    document.getElementById('btn_linea').style.display = 'none';
-    document.getElementById('btn_fin').style.display = 'none';
-    document.getElementById('btn_bingo').style.display = 'none';
-    render();
-    fin();
-});
 
-socket.on('pausar', function (data) {
-    playSound = new SpeechSynthesisUtterance(data.nombre + "ha pedido una pausa");
-    synth.speak(playSound);
-    document.getElementById('btn_pausa').style.display = 'none';
-    document.getElementById('btn_linea').style.display = 'none';
-    document.getElementById('btn_fin').style.display = 'none';
-    document.getElementById('btn_bingo').style.display = 'none';
-    document.getElementById('btn_seguir').style.display = 'inline';
-});
-
-socket.on('seguimos', function () {
-    document.getElementById('btn_pausa').style.display = 'inline';
-    if(document.getElementById('linea_winner').value === undefined) {
-        document.getElementById('btn_linea').style.display = 'inline';
+    if (!(user.length === 0 && jugador)) {
+        playSound = new SpeechSynthesisUtterance("partida terminada ");
+        synth.speak(playSound);
+        document.getElementById('nuevo_usuario').style.display = 'none';
+        document.getElementById('bingo').style.display = 'inline';
+        document.getElementById('esperar').style.display = 'none';
+        document.getElementById('btn_iniciar').style.display = 'inline';
+        document.getElementById('btn_fin').style.display = 'none';
+        document.getElementById('label_bola').style.display = 'none';
+        render();
+        estado = false;
+        jugador = false;
+        linea = false;
+        socket.emit('nuevo-usuario', user);
+    } else {
+        document.getElementById('esperar').style.display = 'none';
+        document.getElementById('formulario').style.display = 'inline';
     }
-    if(document.getElementById('linea_winner').value !== undefined) {
-        document.getElementById('btn_bingo').style.display = 'inline';
-    }
-    document.getElementById('btn_fin').style.display = 'inline';
-    document.getElementById('btn_seguir').style.display = 'none';
-    playSound = new SpeechSynthesisUtterance("continuamos");
-    synth.speak(playSound);
 });
 
 socket.on('linea_song', function (data) {
-    render_linea(data.nombre);
+    linea = true;
+    render_linea(data);
     document.getElementById('linea_winner').style.display = 'inline';
-    playSound = new SpeechSynthesisUtterance(data.nombre + "ha cantado linea, hacemos una pausa para comprobar");
+    playSound = new SpeechSynthesisUtterance(" han cantado linea");
     synth.speak(playSound);
-    document.getElementById('btn_pausa').style.display = 'none';
-    document.getElementById('btn_seguir').style.display = 'inline';
-    document.getElementById('btn_linea').style.display = 'none';
-    document.getElementById('btn_bingo').style.display = 'inline';
 });
 
 socket.on('bingo_song', function (data) {
-    render_bingo(data.nombre);
+    render_bingo(data);
     document.getElementById('bingo_winner').style.display = 'inline';
-    playSound = new SpeechSynthesisUtterance(data.nombre + "ha cantado bingo");
+    playSound = new SpeechSynthesisUtterance(" han cantado bingo");
     synth.speak(playSound);
     fin();
 });
+
+function comprobar(bola) {
+    for(let l= 0; l < 8; l++){
+        if(carton[0][l] === bola.numero){
+            let idi = "c1" + l;
+            document.getElementById(idi).src = "img/bolas/bola0.png";
+        }
+        if(carton[1][l] === bola.numero){
+            let idi = "c2" + l;
+            document.getElementById(idi).src = "img/bolas/bola0.png";
+        }
+        if(carton[2][l] === bola.numero){
+            let idi = "c3" + l;
+            document.getElementById(idi).src = "img/bolas/bola0.png";
+        }
+    }
+    let idi1, idi2, idi3;
+    let linea1,linea1f, linea2, linea2f, linea3, linea3f;
+    for(let l= 0; l < 8; l++){
+        idi1 = "c1" + l;
+        if (document.getElementById(idi1).attributes.src.value === "img/bolas/bola0.png"){
+            linea1 = true;
+        } else {
+            linea1f = true;
+        }
+        idi2 = "c2" + l;
+        if (document.getElementById(idi2).attributes.src.value === "img/bolas/bola0.png"){
+            linea2 = true;
+        } else {
+            linea2f = true;
+        }
+        idi3 = "c3" + l;
+        if (document.getElementById(idi3).attributes.src.value === "img/bolas/bola0.png"){
+            linea3 = true;
+        } else {
+            linea3f = true;
+        }
+    }
+
+    if ((linea1 && !linea1f) || (linea2 && !linea2f) || (linea3 && !linea3f)){
+        if (!linea) {
+            return "linea";
+        }
+    }
+
+    if ((linea1 && !linea1f) && (linea2 && !linea2f) && (linea3 && !linea3f)){
+        return "bingo";
+    }
+    return "nada";
+}
 
 function render_usuarios(data) {
 
     var html = data.map(function(elem, index){
 
         return(`<p>
-                 <strong>${elem.nombre}</strong>
+                 <strong>${elem.nombre}</strong><hr>
         </p>`)
 
     }).join(" ");
-
-
 
     document.getElementById('usuarios').innerHTML = html;
 
@@ -161,14 +226,28 @@ function render_bola(img) {
     document.getElementById('numero').src = img;
 }
 
-function render_linea(nombre) {
-    var html = `<strong class="text-info"> Linea: ${nombre}</strong>`;
+function render_linea(data) {
+    //var html = `<strong class="text-info"> Linea: ${nombre}</strong>`;
+    var html = data.map(function(elem, index){
+
+        return(`<p>
+                 <strong class="text-info">Linea: ${elem.nombre}</strong><hr>
+        </p>`)
+
+    }).join(" ");
 
     document.getElementById('linea_winner').innerHTML = html;
 }
 
-function render_bingo(nombre) {
-    var html = `<strong class="text-danger"> Bingo: ${nombre}</strong>`;
+function render_bingo(data) {
+    //var html = `<strong class="text-danger"> Bingo: ${nombre}</strong>`;
+    var html = data.map(function(elem, index){
+
+        return(`<p>
+                 <strong class="text-info">Bingo: ${elem.nombre}</strong><hr>
+        </p>`)
+
+    }).join(" ");
 
     document.getElementById('bingo_winner').innerHTML = html;
 }
@@ -187,34 +266,94 @@ function addUser(e) {
 }
 
 function iniciar(e) {
-    socket.emit('nuevo-juego');
-    return null;
-}
-
-function pausa() {
-    socket.emit('pausa', user);
-    return null;
-}
-
-function seguir() {
-    socket.emit('seguir');
-    return null;
-}
-
-function linea() {
-    socket.emit('linea', user);
-    return null;
-}
-
-function bingo() {
-    socket.emit('bingo', user);
+    socket.emit('nuevo-juego', user);
     return null;
 }
 
 function fin() {
-
     socket.emit('fin');
+    final = true;
     return null;
+}
+
+function cartones(){
+    let carton1 = [];
+    let linea1 = [];
+    let linea2 = [];
+    let linea3 = [];
+    let bolas_bombo = 80;
+    let bombo_carton = [];
+    let pos = [];
+    let cont = 1;
+
+    for (let c = 0; c < bolas_bombo; c++){
+        bombo_carton[c] =  false;
+    }
+    for(let l = 0; l < 9; l++){
+        linea1[l] = 0;
+        linea2[l] = 0;
+        linea3[l] = 0;
+    }
+
+    for (let p = 0; p < 8; p++){
+        pos[p] = false;
+    }
+    while (cont < 6) {
+        let bola = bola_carton();
+        if (!bombo_carton[bola]) {
+            bombo_carton[bola] = true;
+            let decena = parseInt(bola / 10, 10);
+            if (!pos[decena]) {
+                pos[decena] = true;
+                linea1[decena] = bola;
+                cont++;
+            }
+        }
+    }
+    carton1.push(linea1);
+    cont = 1;
+
+    for (let p = 0; p < 8; p++){
+        pos[p] = false;
+    }
+    while (cont < 6) {
+        let bola = bola_carton();
+        if (!bombo_carton[bola]) {
+            bombo_carton[bola] = true;
+            let decena = parseInt(bola / 10, 10);
+            if (!pos[decena]) {
+                pos[decena] = true;
+                linea2[decena] = bola;
+                cont++;
+            }
+        }
+    }
+    carton1.push(linea2);
+    cont = 1;
+
+    for (let p = 0; p < 8; p++){
+        pos[p] = false;
+    }
+    while (cont < 6) {
+        let bola = bola_carton();
+        if (!bombo_carton[bola]) {
+            bombo_carton[bola] = true;
+            let decena = parseInt(bola / 10, 10);
+            if (!pos[decena]) {
+                pos[decena] = true;
+                linea3[decena] = bola;
+                cont++;
+            }
+        }
+    }
+    carton1.push(linea3);
+    return carton1;
+}
+
+function bola_carton()
+{
+    let numero = Math.round(Math.random() * (80 - 1)) + 1;
+    return numero;
 }
 
 

@@ -3,6 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="298458c3-6468-4d95-9cba-5e06eff89377" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/bolas/numero-de-la-suerte.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/bolas/bola0.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/main.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,8 +40,13 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/public" />
     <property name="nodejs_package_manager_path" value="npm" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public" />
+    </key>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -55,11 +62,19 @@
       <workItem from="1585333347419" duration="861000" />
       <workItem from="1585395162316" duration="454000" />
       <workItem from="1585414306047" duration="7913000" />
-      <workItem from="1585474651809" duration="3428000" />
+      <workItem from="1585474651809" duration="4726000" />
+      <workItem from="1585592500605" duration="17559000" />
+      <workItem from="1585639348497" duration="37188000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="435" y="62" width="810" height="933" key="find.popup" timestamp="1585599162623">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="435" y="62" width="810" height="933" key="find.popup/1680.0.1366.768/0.0.1680.1050@0.0.1680.1050" timestamp="1585599162623" />
   </component>
 </project>
